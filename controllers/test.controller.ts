@@ -86,7 +86,7 @@ const testController={
                 case 3:
                     return res.status(200).json({ language: "C" });
                 case 4:
-                    return res.status(200).json({ language: "C++" });
+                    return res.status(200).json({ language: "Cpp" });
                 case 5:
                     return res.status(200).json({ language: "Python" });
                 case 6:

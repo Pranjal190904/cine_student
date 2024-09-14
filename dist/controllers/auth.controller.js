@@ -18,22 +18,12 @@ const activity_model_1 = __importDefault(require("../models/activity.model"));
 const authController = {
     login: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            const { studentNumber, password, token } = req.body;
-            // const {data} = await axios.post(`https://www.google.com/recaptcha/api/siteverify?secret=${RECAPTCHA_SECRET_KEY}&response=${token}`);
-            // if(!data.success || data.score < 0.5){
-            //     return res.status(400).json({error:"Invalid Captcha"});
-            // }
+            const { studentNumber, password } = req.body;
             const student = yield student_model_1.default.findOne({ studentNumber, password });
             if (!student) {
                 return res.status(400).json({ message: "Invalid credentials" });
             }
             yield activity_model_1.default.findOneAndUpdate({ userId: student.id }, { lastActivity: Date.now() });
-            // const accessToken=await Token.signAccessToken(student.id);
-            // res.cookie("accessToken", accessToken, {
-            //     httpOnly: true,
-            //     secure: true,
-            //     sameSite: "none",
-            // });
             return res.status(200).json({ message: "Login successful", userId: student.id });
         }
         catch (error) {
