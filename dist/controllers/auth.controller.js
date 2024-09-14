@@ -23,6 +23,10 @@ const authController = {
             if (!student) {
                 return res.status(400).json({ message: "Invalid credentials" });
             }
+            const activity = yield activity_model_1.default.findOne({ userId: student.id });
+            if (activity && activity.isSubmitted) {
+                return res.status(400).json({ message: "Test already submitted" });
+            }
             yield activity_model_1.default.findOneAndUpdate({ userId: student.id }, { lastActivity: Date.now() });
             return res.status(200).json({ message: "Login successful", userId: student.id });
         }

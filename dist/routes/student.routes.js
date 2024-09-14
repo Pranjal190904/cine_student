@@ -18,4 +18,5 @@ router.get('/feedbackQuestions', feedback_controller_1.default.feedbackQuestions
 router.post('/submitFeedback', feedback_controller_1.default.submitFeedback);
 router.get('/getResponses', test_controller_1.default.getResponses);
 router.get('/timeRemaining', test_controller_1.default.getTime);
+router.post('/submitTest', test_controller_1.default.submitTest);
 exports.default = router;

@@ -124,6 +124,16 @@ const testController = {
         catch (error) {
             return res.status(500).json({ message: "Internal server error" });
         }
+    }),
+    submitTest: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const { userId } = req.body;
+            const activity = yield activity_model_1.default.findOneAndUpdate({ userId }, { isSubmitted: true });
+            return res.status(200).json({ message: "Test submitted" });
+        }
+        catch (error) {
+            return res.status(500).json({ message: "Internal server error" });
+        }
     })
 };
 exports.default = testController;

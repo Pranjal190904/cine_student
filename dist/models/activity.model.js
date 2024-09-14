@@ -6,7 +6,8 @@ const activitySchema = new mongoose_1.Schema({
     preference: { type: Number },
     lastActivity: { type: Number },
     timeSpent: { type: Number },
-    questions: { type: Object, default: {} }
+    questions: { type: Object, default: {} },
+    isSubmitted: { type: Boolean, default: false }
 }, { versionKey: false });
 const Activity = (0, mongoose_1.model)('Activity', activitySchema);
 exports.default = Activity;

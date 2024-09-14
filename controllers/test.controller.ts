@@ -122,6 +122,16 @@ const testController={
         catch(error) {
             return res.status(500).json({message:"Internal server error"});
         }
+    },
+    submitTest: async(req:Request,res:Response):Promise<Response>=>{
+        try{
+            const {userId} = req.body;
+            const activity = await ActivityModel.findOneAndUpdate({userId},{isSubmitted:true});
+            return res.status(200).json({message:"Test submitted"});
+        }
+        catch(error) {
+            return res.status(500).json({message:"Internal server error"});
+        }
     }
 }
 

@@ -18,6 +18,7 @@ interface IActivity extends Document {
     lastActivity: number;
     timeSpent: number;
     questions: {[subject: string ] : IQuestion[]};
+    isSubmitted: boolean;
 }
 
 const activitySchema: Schema<IActivity> = new Schema({
@@ -25,7 +26,8 @@ const activitySchema: Schema<IActivity> = new Schema({
     preference: { type: Number},
     lastActivity: { type: Number},
     timeSpent: { type: Number},
-    questions: { type: Object, default: {}}
+    questions: { type: Object, default: {}},
+    isSubmitted: { type: Boolean, default: false}
 }, { versionKey: false });
 
 const Activity = model<IActivity>('Activity', activitySchema);
