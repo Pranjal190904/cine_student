@@ -27,6 +27,10 @@ const testController = {
                 activity.lastActivity = Date.now();
                 yield activity.save();
             }
+            if (status === -1) {
+                await ResponseModel.findOneAndDelete({ quesId, userId });
+                return res.status(200).json({ message: "Response cleared" });
+            }
             const existingResponse = yield response_model_1.default.findOne({ quesId, userId });
             if (existingResponse) {
                 yield response_model_1.default.findOneAndUpdate({ quesId, userId }, { status, ansId });
