@@ -113,7 +113,7 @@ const testController={
         try{
             const userId = req.query.userId as string;
             const activity = await ActivityModel.findOne({userId});
-            const time = 3*60*60*1000;
+            const time = 1*60*60*1000;
             if (activity?.timeSpent) {
                 return res.status(200).json({ remainingTime: time - activity.timeSpent });
             }
