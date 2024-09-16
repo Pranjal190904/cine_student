@@ -5,7 +5,7 @@ import ActivityModel from "../models/activity.model";
 import Question from "../models/question.model";
 import NodeCache from "node-cache"; 
 
-const cache = new NodeCache({ stdTTL: 60 * 60 * 3 });
+const cache = new NodeCache({ stdTTL: 60 * 60 * 1 });
 
 const testController={
     response: async(req:Request,res:Response):Promise<Response>=>{
@@ -19,6 +19,10 @@ const testController={
                 await activity.save();
             }
             const existingResponse=await ResponseModel.findOne({quesId,userId});
+            if(status == -1 ) {
+                await ResponseModel.findOneAndDelete({ quesId, userId });
+                return res.status(200).json({ message: "Response cleared" });
+            }
             if(existingResponse)
             {
                 await ResponseModel.findOneAndUpdate({quesId,userId},{status ,ansId});
