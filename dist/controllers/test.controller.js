@@ -115,7 +115,7 @@ const testController = {
         try {
             const userId = req.query.userId;
             const activity = yield activity_model_1.default.findOne({ userId });
-            const time = 3 * 60 * 60 * 1000;
+            const time = 1 * 60 * 60 * 1000;
             if (activity === null || activity === void 0 ? void 0 : activity.timeSpent) {
                 return res.status(200).json({ remainingTime: time - activity.timeSpent });
             }
