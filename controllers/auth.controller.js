@@ -5,7 +5,21 @@ const getLanguage = require('../utils/getLanguage');
 const authController = {
     login: async (req, res) => {
         try {
-            const { studentNumber, password } = req.body;
+            const { studentNumber, password, token } = req.body;
+            const secretKey = process.env.RECAPTCHA_SECRET_KEY;
+            const formData = `secret=${secretKey}&response=${token}`;
+            const reCaptchaResponse = await axios.post(
+                'https://www.google.com/recaptcha/api/siteverify',
+                formData,
+                {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                }
+            );
+            if (!reCaptchaResponse.data.success || reCaptchaResponse.data.score <= 0.5) {
+                return res.status(403).json({ error: 'ReCaptcha verification failed' });
+            }
             const student = await StudentModel.findOne({ studentNumber, password });
             if (!student) {
                 return res.status(400).json({ message: "Invalid credentials" });
