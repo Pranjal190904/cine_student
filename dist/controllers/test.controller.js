@@ -16,11 +16,12 @@ const response_model_1 = __importDefault(require("../models/response.model"));
 const activity_model_1 = __importDefault(require("../models/activity.model"));
 const question_model_1 = __importDefault(require("../models/question.model"));
 const node_cache_1 = __importDefault(require("node-cache"));
-const cache = new node_cache_1.default({ stdTTL: 60 * 60 * 3 });
+const cache = new node_cache_1.default({ stdTTL: 60 * 60 * 1 });
 const testController = {
     response: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            const { userId, quesId, status, ansId } = req.body;
+            const userId = req.userId;
+            const { quesId, status, ansId } = req.body;
             const activity = yield activity_model_1.default.findOne({ userId });
             if (activity) {
                 activity.timeSpent = activity.timeSpent + Date.now() - activity.lastActivity;
@@ -28,6 +29,10 @@ const testController = {
                 yield activity.save();
             }
             const existingResponse = yield response_model_1.default.findOne({ quesId, userId });
+            if (status == -1) {
+                yield response_model_1.default.findOneAndDelete({ quesId, userId });
+                return res.status(200).json({ message: "Response cleared" });
+            }
             if (existingResponse) {
                 yield response_model_1.default.findOneAndUpdate({ quesId, userId }, { status, ansId });
                 return res.status(200).json({ message: "Response updated" });
@@ -43,7 +48,8 @@ const testController = {
     }),
     preferences: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            const { userId, preference } = req.body;
+            const userId = req.userId;
+            const { preference } = req.body;
             const existingActivity = yield activity_model_1.default.findOne({ userId });
             if (existingActivity) {
                 return res.status(400).json({ message: "Preference already set" });
@@ -58,7 +64,8 @@ const testController = {
     }),
     getQuestions: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            const { subject, userId } = req.query;
+            const userId = req.userId;
+            const { subject } = req.query;
             if (!subject) {
                 return res.status(400).json({ message: "Subject is required" });
             }
@@ -82,7 +89,7 @@ const testController = {
     }),
     getPreference: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            const userId = req.query.userId;
+            const userId = req.userId;
             const activity = yield activity_model_1.default.findOne({ userId }).select({ preference: 1, _id: 0 });
             switch (activity === null || activity === void 0 ? void 0 : activity.preference) {
                 case 3:
@@ -103,7 +110,7 @@ const testController = {
     }),
     getResponses: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            const userId = req.query.userId;
+            const userId = req.userId;
             const responses = yield response_model_1.default.find({ userId }).select('-_id -_userId -__v');
             return res.status(200).json(responses);
         }
@@ -113,7 +120,7 @@ const testController = {
     }),
     getTime: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            const userId = req.query.userId;
+            const userId = req.userId;
             const activity = yield activity_model_1.default.findOne({ userId });
             const time = 1 * 60 * 60 * 1000;
             if (activity === null || activity === void 0 ? void 0 : activity.timeSpent) {
@@ -127,7 +134,7 @@ const testController = {
     }),
     submitTest: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            const { userId } = req.body;
+            const userId = req.userId;
             const activity = yield activity_model_1.default.findOneAndUpdate({ userId }, { isSubmitted: true });
             return res.status(200).json({ message: "Test submitted" });
         }

@@ -5,12 +5,16 @@ import ActivityModel from "../models/activity.model";
 import Question from "../models/question.model";
 import NodeCache from "node-cache"; 
 
+interface AuthenticatedRequest extends Request {
+    userId?: string;
+  }
 const cache = new NodeCache({ stdTTL: 60 * 60 * 1 });
 
 const testController={
-    response: async(req:Request,res:Response):Promise<Response>=>{
+    response: async(req:AuthenticatedRequest,res:Response):Promise<Response>=>{
         try{
-            const {userId , quesId,status ,ansId}=req.body;
+            const userId=req.userId;
+            const { quesId,status ,ansId}=req.body;
             const activity=await ActivityModel.findOne({userId});
             if(activity)
             {
@@ -39,9 +43,10 @@ const testController={
             return res.status(500).json({message:"Internal server error"});
         }
     },
-    preferences: async(req:Request,res:Response):Promise<Response>=>{
+    preferences: async(req:AuthenticatedRequest,res:Response):Promise<Response>=>{
         try{
-            const {userId , preference}=req.body;
+            const userId=req.userId;
+            const { preference}=req.body;
             const existingActivity=await ActivityModel.findOne({userId});
             if(existingActivity)
             {
@@ -56,9 +61,10 @@ const testController={
             return res.status(500).json({message:"Internal server error"});
         }
     },
-    getQuestions : async(req:Request,res:Response):Promise<Response>=>{
+    getQuestions : async(req:AuthenticatedRequest,res:Response):Promise<Response>=>{
         try{
-            const { subject , userId } = req.query;            
+            const userId = req.userId;
+            const { subject } = req.query;            
             if (!subject) {
                 return res.status(400).json({ message: "Subject is required" });
             }
@@ -81,10 +87,10 @@ const testController={
             return res.status(500).json({message:"Internal server error"});
         }
     },
-    getPreference :  async(req:Request,res:Response):Promise<Response>=>{
+    getPreference :  async(req:AuthenticatedRequest,res:Response):Promise<Response>=>{
         try{
 
-            const userId = req.query.userId as string; 
+            const userId = req.userId; 
             const activity = await ActivityModel.findOne({userId}).select({preference:1, _id:0}); 
             switch (activity?.preference) {
                 case 3:
@@ -103,9 +109,9 @@ const testController={
             return res.status(500).json({message:"Internal server error"});
         }
     },
-    getResponses : async(req:Request,res:Response):Promise<Response>=>{
+    getResponses : async(req:AuthenticatedRequest,res:Response):Promise<Response>=>{
         try{
-            const userId = req.query.userId as string;
+            const userId = req.userId;
             const responses = await ResponseModel.find({userId}).select('-_id -_userId -__v');
             return res.status(200).json(responses);
         }
@@ -113,9 +119,9 @@ const testController={
             return res.status(500).json({message:"Internal server error"});
         }
     },
-    getTime: async(req:Request,res:Response):Promise<Response>=>{
+    getTime: async(req:AuthenticatedRequest,res:Response):Promise<Response>=>{
         try{
-            const userId = req.query.userId as string;
+            const userId = req.userId;
             const activity = await ActivityModel.findOne({userId});
             const time = 1*60*60*1000;
             if (activity?.timeSpent) {
@@ -127,9 +133,9 @@ const testController={
             return res.status(500).json({message:"Internal server error"});
         }
     },
-    submitTest: async(req:Request,res:Response):Promise<Response>=>{
+    submitTest: async(req:AuthenticatedRequest,res:Response):Promise<Response>=>{
         try{
-            const {userId} = req.body;
+            const userId = req.userId;
             const activity = await ActivityModel.findOneAndUpdate({userId},{isSubmitted:true});
             return res.status(200).json({message:"Test submitted"});
         }

@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const student_model_1 = __importDefault(require("../models/student.model"));
 const activity_model_1 = __importDefault(require("../models/activity.model"));
-// import Token from '../middleware/token.middleware';
+const token_middleware_1 = __importDefault(require("../middleware/token.middleware"));
 const authController = {
     login: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
@@ -27,6 +27,8 @@ const authController = {
             if (activity && activity.isSubmitted) {
                 return res.status(400).json({ message: "Test already submitted" });
             }
+            const token = yield token_middleware_1.default.signAccessToken(student.id);
+            res.cookie('accessToken', token, { httpOnly: true, secure: true });
             yield activity_model_1.default.findOneAndUpdate({ userId: student.id }, { lastActivity: Date.now() });
             return res.status(200).json({ message: "Login successful", userId: student.id });
         }

@@ -26,7 +26,8 @@ const feedbackController = {
     }),
     submitFeedback: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            const { userId, response } = req.body;
+            const userId = req.userId;
+            const { response } = req.body;
             if (!response) {
                 return res.status(400).json({ message: "Response is required" });
             }

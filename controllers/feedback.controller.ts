@@ -2,6 +2,10 @@ import { Request,Response } from "express";
 import Feedback from "../models/feedback.model";
 import FeedbackResponseModel from "../models/feedbackResponse.model";
 
+interface AuthenticatedRequest extends Request {
+    userId?: string;
+}
+
 const feedbackController={
     feedbackQuestions: async( req:Request,res:Response):Promise<Response>=>{
         try{
@@ -12,9 +16,10 @@ const feedbackController={
             return res.status(500).json({message:"Internal server error"});
         }
     },
-    submitFeedback: async(req:Request,res:Response):Promise<Response>=>{
+    submitFeedback: async(req:AuthenticatedRequest,res:Response):Promise<Response>=>{
         try{
-            const { userId, response  } = req.body;             
+            const userId=req.userId;
+            const {  response  } = req.body;             
             if(!response)
             {
                 return res.status(400).json({message:"Response is required"});
